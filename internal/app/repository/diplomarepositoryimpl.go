@@ -6,14 +6,14 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-type DimplomaServiceRepository struct {
+type DiplomaServiceRepository struct {
 	db *pgxpool.Pool
 }
 
 func NewDiplomaRepository(db *pgxpool.Pool) DiplomaRepository {
-	return &DimplomaServiceRepository{db: db}
+	return &DiplomaServiceRepository{db: db}
 }
 
-func (afr *DimplomaServiceRepository) FindAllRestaraunts(ctx context.Context) (*model.RestarauntsModel, error) {
+func (afr *DiplomaServiceRepository) FindAllRestaurants(ctx context.Context) (*model.Restaurant, error) {
 	return nil, nil
 }

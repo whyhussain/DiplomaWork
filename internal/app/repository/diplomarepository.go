@@ -6,5 +6,5 @@ import (
 )
 
 type DiplomaRepository interface {
-	FindAllRestaraunts(ctx context.Context) (*model.RestarauntsModel, error)
+	FindAllRestaurants(ctx context.Context) (*model.Restaurant, error)
 }

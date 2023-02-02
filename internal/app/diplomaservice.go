@@ -8,14 +8,15 @@ import (
 	"fmt"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/labstack/echo/v4"
+	"os"
 )
 
 func StartNumbleServie(ctx context.Context, errCh chan<- error) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-
-	urlDb := "postgres://postgres:JHsdayd78231@localhost:5432/parse"
+	user, password := os.Getenv("db_user"), os.Getenv("db_pass")
+	urlDb := fmt.Sprintf("postgres://%s:%s@localhost:5432/project", user, password)
 	a, Err := pgxpool.Connect(ctx, urlDb)
 	defer a.Close()
 
