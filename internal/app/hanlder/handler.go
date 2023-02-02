@@ -9,14 +9,14 @@ type DipHandler struct {
 	service service.DiplomaService
 }
 
-func NewDiplomaHandler(srv service.DiplomaService, ) *DipHandler {
+func NewDiplomaHandler(srv service.DiplomaService) *DipHandler {
 	return &DipHandler{
 		service: srv}
 
 }
 
-func (h *DipHandler) GetAllRestaraunts(c echo.Context) error {
-	
+func (h *DipHandler) GetAllRestaurants(c echo.Context) error {
+
 	return nil
 
 }

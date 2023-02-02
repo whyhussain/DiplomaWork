@@ -6,15 +6,18 @@ import (
 	"context"
 )
 
-type DiplomserviceImpl struct {
+type DiplomaServiceImpl struct {
 	dipRepository repository.DiplomaRepository
 }
 
 func NewDiplomaService(repo repository.DiplomaRepository) DiplomaService {
-	return &DiplomserviceImpl{dipRepository: repo}
+	return &DiplomaServiceImpl{dipRepository: repo}
 }
 
-func (as *DiplomserviceImpl) GetAllRestaraunt(ctx context.Context) (*model.RestarauntsModel, error) {
-	as.dipRepository.FindAllRestaraunts(ctx)
-	return nil, nil
+func (as *DiplomaServiceImpl) GetAllRestaurants(ctx context.Context) (*model.Restaurant, error) {
+	restaurants, err := as.dipRepository.FindAllRestaurants(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return restaurants, nil
 }

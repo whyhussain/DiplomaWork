@@ -6,5 +6,5 @@ import (
 )
 
 type DiplomaService interface {
-	GetAllRestaraunt(ctx context.Context) (*model.RestarauntsModel, error)
+	GetAllRestaurants(ctx context.Context) (*model.Restaurant, error)
 }
