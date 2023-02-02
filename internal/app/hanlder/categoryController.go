@@ -1,4 +1,4 @@
-package controller
+package hanlder
 
 import (
 	"DiplomaWork/internal/app/model"
@@ -12,7 +12,7 @@ import (
 	"net/http"
 )
 
-func addCategory(c echo.Context, conn *pgxpool.Pool) error {
+func AddCategory(c echo.Context, conn *pgxpool.Pool) error {
 	var category model.Category
 	requestbody, err := io.ReadAll(c.Request().Body)
 	if err != nil {
@@ -23,7 +23,7 @@ func addCategory(c echo.Context, conn *pgxpool.Pool) error {
 		fmt.Errorf("error unmarshalling request body: %s", err)
 	}
 
-	_, err = conn.Query(context.Background(), "INSERT INTO category (id, name) VALUES ($1, $2)", category.Id, category.Name)
+	_, err = conn.Query(context.Background(), "INSERT INTO category (name) VALUES ($1)", category.Name)
 	if err != nil {
 		fmt.Errorf("error inserting category: %s", err)
 		return err
@@ -31,7 +31,7 @@ func addCategory(c echo.Context, conn *pgxpool.Pool) error {
 	return c.JSON(http.StatusOK, category.Name)
 }
 
-func getCategories(conn *pgxpool.Pool) ([]model.Category, error) {
+func GetCategories(conn *pgxpool.Pool) ([]model.Category, error) {
 	rows, err := conn.Query(context.Background(), "SELECT id, name FROM category")
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func getCategories(conn *pgxpool.Pool) ([]model.Category, error) {
 	return categories, nil
 }
 
-func getCategory(c echo.Context, conn *pgxpool.Pool) (model.Category, error) {
+func GetCategory(c echo.Context, conn *pgxpool.Pool) (model.Category, error) {
 	id := c.Param("id")
 	var category model.Category
 	log.Println("getCategory called with id:", id)
@@ -79,7 +79,7 @@ func getCategory(c echo.Context, conn *pgxpool.Pool) (model.Category, error) {
 	return category, nil
 }
 
-func deleteCategory(c echo.Context, conn *pgxpool.Pool) (string, error) {
+func DeleteCategory(c echo.Context, conn *pgxpool.Pool) (string, error) {
 	id := c.Param("id")
 	log.Println("deleteCategory called with id:", id)
 	_, err := conn.Query(context.Background(), "DELETE FROM category WHERE id = $1", id)
@@ -91,7 +91,7 @@ func deleteCategory(c echo.Context, conn *pgxpool.Pool) (string, error) {
 	return id, nil
 }
 
-func updateCategory(c echo.Context, conn *pgxpool.Pool) (model.Category, error) {
+func UpdateCategory(c echo.Context, conn *pgxpool.Pool) (model.Category, error) {
 	id := c.Param("id")
 	ct := model.Category{}
 	requestbody, err := io.ReadAll(c.Request().Body)
@@ -108,7 +108,7 @@ func updateCategory(c echo.Context, conn *pgxpool.Pool) (model.Category, error) 
 		fmt.Errorf("error updating category: %s", err)
 		return model.Category{}, err
 	}
-	updatedCategory, err := getCategory(c, conn)
+	updatedCategory, err := GetCategory(c, conn)
 	if err != nil {
 		return model.Category{}, err
 	}
