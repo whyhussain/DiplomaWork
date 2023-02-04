@@ -30,10 +30,9 @@ func (h *DipHandler) GetAllRestaraunts(c echo.Context) error {
 	if err != nil {
 		fmt.Println(err)
 	}
+	fmt.Println(json.Marshal(restaraunts))
 
 	return c.JSON(http.StatusOK, restaraunts)
-
-	return nil
 
 }
 func (h *DipHandler) NewRestaraunts(c echo.Context) error {
