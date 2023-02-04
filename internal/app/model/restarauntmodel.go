@@ -2,8 +2,7 @@ package model
 
 type RestarauntsModel struct {
 	RestarauntName     string `json:"restaraunt_name"`
-	RestarauntCategory string `json:"restaraunt_category"`
-	RestarauntMenu     Menu   `json:"restaraunt_menu"`
+	RestarauntCategory int    `json:"restaraunt_category"`
 }
 
 type Menu struct {

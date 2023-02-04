@@ -15,7 +15,7 @@ func StartNumbleServie(ctx context.Context, errCh chan<- error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	urlDb := "postgres://postgres:JHsdayd78231@localhost:5432/parse"
+	urlDb := "postgres://postgres:JHsdayd78231@localhost:5432/diploma"
 	a, Err := pgxpool.Connect(ctx, urlDb)
 	defer a.Close()
 
@@ -27,7 +27,8 @@ func StartNumbleServie(ctx context.Context, errCh chan<- error) {
 	srv := service.NewDiplomaService(repo)
 	handlers := hanlder.NewDiplomaHandler(srv)
 	e.GET("/restaraunts", handlers.GetAllRestaraunts)
+	e.POST("/createrest", handlers.NewRestaraunts)
 
-	e.Logger.Fatal(e.Start(":1323"))
+	e.Logger.Fatal(e.Start(":8080"))
 
 }
