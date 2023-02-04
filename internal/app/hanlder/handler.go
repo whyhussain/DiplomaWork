@@ -30,7 +30,6 @@ func (h *DipHandler) GetAllRestaraunts(c echo.Context) error {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(json.Marshal(restaraunts))
 
 	return c.JSON(http.StatusOK, restaraunts)
 
@@ -48,11 +47,24 @@ func (h *DipHandler) NewRestaraunts(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	restaraunts, err := h.service.NewRestaraunt(ctx, rest.RestarauntName, 1)
+	restaraunts, err := h.service.NewRestaraunt(ctx, rest.RestarauntName, rest.CategoryID)
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	return c.JSON(http.StatusCreated, restaraunts)
+
+}
+func (h *DipHandler) GetCategories(c echo.Context) error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	categories, err := h.service.GetCattegories(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(json.Marshal(categories))
+
+	return c.JSON(http.StatusOK, categories)
 
 }

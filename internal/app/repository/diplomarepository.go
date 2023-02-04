@@ -8,4 +8,5 @@ import (
 type DiplomaRepository interface {
 	FindAllRestaraunts(ctx context.Context) ([]*model.RestarauntsModel, error)
 	NewRestaraunts(ctx context.Context, Name string, Category int) (string, error)
+	AllCategories(ctx context.Context) ([]*model.Category, error)
 }

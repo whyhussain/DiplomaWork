@@ -28,6 +28,7 @@ func StartNumbleServie(ctx context.Context, errCh chan<- error) {
 	handlers := hanlder.NewDiplomaHandler(srv)
 	e.GET("/restaraunts", handlers.GetAllRestaraunts)
 	e.POST("/createrest", handlers.NewRestaraunts)
+	e.GET("/categories", handlers.GetCategories)
 
 	e.Logger.Fatal(e.Start(":8080"))
 

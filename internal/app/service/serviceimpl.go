@@ -28,3 +28,10 @@ func (as *DiplomserviceImpl) NewRestaraunt(ctx context.Context, Name string, Cat
 	}
 	return msg, nil
 }
+func (as *DiplomserviceImpl) GetCattegories(ctx context.Context) ([]*model.Category, error) {
+	categories, err := as.dipRepository.AllCategories(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return categories, nil
+}

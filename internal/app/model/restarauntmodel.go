@@ -4,6 +4,7 @@ type RestarauntsModel struct {
 	//Id                 string `json:"id"`
 	RestarauntName     string `json:"restaraunt_name"`
 	RestarauntCategory string `json:"restaraunt_category"`
+	CategoryID         int    `json:"category_id"`
 }
 
 type Category struct {
