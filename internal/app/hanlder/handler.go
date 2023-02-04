@@ -47,6 +47,10 @@ func (h *DipHandler) NewRestaraunts(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
+	if rest.RestarauntName == "" || rest.CategoryID == 0 {
+		return c.JSON(http.StatusBadRequest, fmt.Errorf("missing parameters").Error())
+	}
+
 	restaraunts, err := h.service.NewRestaraunt(ctx, rest.RestarauntName, rest.CategoryID)
 	if err != nil {
 		fmt.Println(err)

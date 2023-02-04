@@ -34,7 +34,7 @@ func (afr *DimplomaServiceRepository) NewRestaraunts(ctx context.Context, Name s
 	query := ` SELECT label,category_type FROM restaraunts WHERE label =$1 and category_type =$2`
 	rows, err := afr.db.Query(ctx, query, Name, Category)
 	if rows.Next() != false {
-		return "we have this restaraunt", nil
+		return "we have this restaraunt", err
 	}
 	query = `insert into restaraunts(label, category_type)SELECT $1, $2 where
     NOT EXISTS (
