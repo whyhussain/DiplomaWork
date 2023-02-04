@@ -16,13 +16,15 @@ func NewDiplomaRepository(db *pgxpool.Pool) DiplomaRepository {
 
 func (afr *DimplomaServiceRepository) FindAllRestaraunts(ctx context.Context) ([]*model.RestarauntsModel, error) {
 	restaraunts := []*model.RestarauntsModel{}
-	rest := model.RestarauntsModel{}
-	query := `select id ,label,category_type from restaraunts`
+
+	query := `select r.label,c.name from restaraunts r
+	join category c on c.id = r.category_type`
 	rows, err := afr.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
+		rest := model.RestarauntsModel{}
 		rows.Scan(&rest.RestarauntName, &rest.RestarauntCategory)
 		restaraunts = append(restaraunts, &rest)
 	}

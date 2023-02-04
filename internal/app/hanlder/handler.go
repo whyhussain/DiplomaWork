@@ -48,7 +48,7 @@ func (h *DipHandler) NewRestaraunts(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	restaraunts, err := h.service.NewRestaraunt(ctx, rest.RestarauntName, rest.RestarauntCategory)
+	restaraunts, err := h.service.NewRestaraunt(ctx, rest.RestarauntName, 1)
 	if err != nil {
 		fmt.Println(err)
 	}
