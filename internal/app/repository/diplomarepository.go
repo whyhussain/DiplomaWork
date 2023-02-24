@@ -6,9 +6,6 @@ import (
 )
 
 type DiplomaRepository interface {
-<<<<<<< Updated upstream
-	FindAllRestaurants(ctx context.Context) (*model.Restaurant, error)
-=======
 	FindAllRestaurants(ctx context.Context) ([]*model.RestaurantsModel, error)
 	FindRestaurantById(ctx context.Context, id int) (*model.RestaurantsModel, error)
 	AddRestaurants(ctx context.Context, Name string, Category int) (string, error)
@@ -23,5 +20,4 @@ type DiplomaRepository interface {
 	AddMenu(ctx context.Context, Name string, RestaurantId int, Price int) (string, error)
 	DeleteMenuById(ctx context.Context, id int) error
 	UpdateMenu(ctx context.Context, menu *model.Menu) (*model.Menu, error)
->>>>>>> Stashed changes
 }

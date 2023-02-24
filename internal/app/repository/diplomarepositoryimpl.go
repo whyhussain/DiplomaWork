@@ -16,11 +16,7 @@ func NewDiplomaRepository(db *pgxpool.Pool) DiplomaRepository {
 	return &DiplomaServiceRepository{db: db}
 }
 
-<<<<<<< Updated upstream
-func (afr *DiplomaServiceRepository) FindAllRestaurants(ctx context.Context) (*model.Restaurant, error) {
-	return nil, nil
-=======
-func (afr *DimplomaServiceRepository) FindAllRestaurants(ctx context.Context) ([]*model.RestaurantsModel, error) {
+func (afr *DiplomaServiceRepository) FindAllRestaurants(ctx context.Context) ([]*model.RestaurantsModel, error) {
 	restaurants := []*model.RestaurantsModel{}
 
 	query := `select r.id, r.label,c.type from restaurants r
@@ -37,7 +33,7 @@ func (afr *DimplomaServiceRepository) FindAllRestaurants(ctx context.Context) ([
 	return restaurants, nil
 }
 
-func (afr *DimplomaServiceRepository) FindRestaurantById(ctx context.Context, id int) (*model.RestaurantsModel, error) {
+func (afr *DiplomaServiceRepository) FindRestaurantById(ctx context.Context, id int) (*model.RestaurantsModel, error) {
 	restaurant := &model.RestaurantsModel{}
 
 	query := `SELECT id, label, category_type FROM restaurants WHERE id = $1`
@@ -59,7 +55,7 @@ func (afr *DimplomaServiceRepository) FindRestaurantById(ctx context.Context, id
 	return restaurant, nil
 }
 
-func (afr *DimplomaServiceRepository) AddRestaurants(ctx context.Context, Name string, Category int) (string, error) {
+func (afr *DiplomaServiceRepository) AddRestaurants(ctx context.Context, Name string, Category int) (string, error) {
 	query := ` SELECT label,category_type FROM restaurants WHERE label =$1 and category_type =$2`
 	rows, err := afr.db.Query(ctx, query, Name, Category)
 	if rows.Next() {
@@ -78,7 +74,7 @@ func (afr *DimplomaServiceRepository) AddRestaurants(ctx context.Context, Name s
 
 }
 
-func (afr *DimplomaServiceRepository) UpdateRestaurant(ctx context.Context, restaurant *model.RestaurantsModel) (*model.RestaurantsModel, error) {
+func (afr *DiplomaServiceRepository) UpdateRestaurant(ctx context.Context, restaurant *model.RestaurantsModel) (*model.RestaurantsModel, error) {
 	if afr.db == nil {
 		return nil, fmt.Errorf("database connection is nil")
 	}
@@ -92,7 +88,7 @@ func (afr *DimplomaServiceRepository) UpdateRestaurant(ctx context.Context, rest
 	return restaurant, nil
 }
 
-func (afr *DimplomaServiceRepository) DeleteRestaurantById(ctx context.Context, id int) error {
+func (afr *DiplomaServiceRepository) DeleteRestaurantById(ctx context.Context, id int) error {
 	query := `DELETE FROM restaurants WHERE id=$1`
 	_, err := afr.db.Exec(ctx, query, id)
 	if err != nil {
@@ -101,7 +97,7 @@ func (afr *DimplomaServiceRepository) DeleteRestaurantById(ctx context.Context, 
 	return nil
 }
 
-func (afr *DimplomaServiceRepository) AllCategories(ctx context.Context) ([]*model.Category, error) {
+func (afr *DiplomaServiceRepository) AllCategories(ctx context.Context) ([]*model.Category, error) {
 	categories := []*model.Category{}
 
 	query := `select id,type from category`
@@ -115,10 +111,9 @@ func (afr *DimplomaServiceRepository) AllCategories(ctx context.Context) ([]*mod
 		categories = append(categories, &category)
 	}
 	return categories, nil
->>>>>>> Stashed changes
 }
 
-func (afr *DimplomaServiceRepository) AddCategory(ctx context.Context, Type string) (string, error) {
+func (afr *DiplomaServiceRepository) AddCategory(ctx context.Context, Type string) (string, error) {
 	query := ` SELECT type FROM category WHERE type =$1`
 	rows, err := afr.db.Query(ctx, query, Type)
 	if rows.Next() {
@@ -137,7 +132,7 @@ func (afr *DimplomaServiceRepository) AddCategory(ctx context.Context, Type stri
 
 }
 
-func (afr *DimplomaServiceRepository) FindAllMenu(ctx context.Context) ([]*model.Menu, error) {
+func (afr *DiplomaServiceRepository) FindAllMenu(ctx context.Context) ([]*model.Menu, error) {
 	menus := []*model.Menu{}
 
 	query := `select m.id, m.name, m.restaurant_id, m.price from menu m
@@ -154,7 +149,7 @@ func (afr *DimplomaServiceRepository) FindAllMenu(ctx context.Context) ([]*model
 	return menus, nil
 }
 
-func (afr *DimplomaServiceRepository) FindMenuById(ctx context.Context, id int) (*model.Menu, error) {
+func (afr *DiplomaServiceRepository) FindMenuById(ctx context.Context, id int) (*model.Menu, error) {
 	menu := &model.Menu{}
 
 	query := `SELECT id, name, restaurant_id, price FROM menu WHERE id = $1`
@@ -176,7 +171,7 @@ func (afr *DimplomaServiceRepository) FindMenuById(ctx context.Context, id int) 
 	return menu, nil
 }
 
-func (afr *DimplomaServiceRepository) AddMenu(ctx context.Context, Name string, RestaurantId int, Price int) (string, error) {
+func (afr *DiplomaServiceRepository) AddMenu(ctx context.Context, Name string, RestaurantId int, Price int) (string, error) {
 	query := ` SELECT name, restaurant_id, price FROM menu WHERE name=$1 AND restaurant_id=$2 AND price=$3`
 	rows, err := afr.db.Query(ctx, query, Name, RestaurantId, Price)
 	if rows.Next() {
@@ -196,7 +191,7 @@ func (afr *DimplomaServiceRepository) AddMenu(ctx context.Context, Name string, 
 
 }
 
-func (afr *DimplomaServiceRepository) DeleteMenuById(ctx context.Context, id int) error {
+func (afr *DiplomaServiceRepository) DeleteMenuById(ctx context.Context, id int) error {
 	query := `DELETE FROM menu WHERE id=$1`
 	_, err := afr.db.Exec(ctx, query, id)
 	if err != nil {
@@ -205,7 +200,7 @@ func (afr *DimplomaServiceRepository) DeleteMenuById(ctx context.Context, id int
 	return nil
 }
 
-func (afr *DimplomaServiceRepository) UpdateMenu(ctx context.Context, menu *model.Menu) (*model.Menu, error) {
+func (afr *DiplomaServiceRepository) UpdateMenu(ctx context.Context, menu *model.Menu) (*model.Menu, error) {
 	if afr.db == nil {
 		return nil, fmt.Errorf("database connection is nil")
 	}

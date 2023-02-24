@@ -1,10 +1,8 @@
 package hanlder
 
 import (
+	"DiplomaWork/internal/app/model"
 	"DiplomaWork/internal/app/service"
-<<<<<<< Updated upstream
-	"github.com/labstack/echo/v4"
-=======
 	"context"
 	"encoding/json"
 	"fmt"
@@ -15,7 +13,6 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"net/http"
->>>>>>> Stashed changes
 )
 
 type DipHandler struct {
@@ -29,10 +26,6 @@ func NewDiplomaHandler(srv service.DiplomaService) *DipHandler {
 }
 
 func (h *DipHandler) GetAllRestaurants(c echo.Context) error {
-<<<<<<< Updated upstream
-
-	return nil
-=======
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -160,7 +153,6 @@ func (h *DipHandler) GetCategories(c echo.Context) error {
 	log.Println(json.Marshal(categories))
 
 	return c.JSON(http.StatusOK, categories)
->>>>>>> Stashed changes
 
 }
 
