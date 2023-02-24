@@ -6,9 +6,6 @@ import (
 )
 
 type DiplomaService interface {
-<<<<<<< Updated upstream
-	GetAllRestaurants(ctx context.Context) (*model.Restaurant, error)
-=======
 	GetAllRestaurant(ctx context.Context) ([]*model.RestaurantsModel, error)
 	GetRestaurantById(ctx context.Context, id int) (*model.RestaurantsModel, error)
 	AddRestaurant(ctx context.Context, Name string, Category int) (string, error)
@@ -23,5 +20,4 @@ type DiplomaService interface {
 	AddMenu(ctx context.Context, Name string, RestaurantId int, Price int) (string, error)
 	DeleteMenuById(ctx context.Context, id int) error
 	UpdateMenu(ctx context.Context, menu *model.Menu) error
->>>>>>> Stashed changes
 }
