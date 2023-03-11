@@ -1,0 +1,7 @@
+<<<<<<< Updated upstream
+.env
+=======
+.env
+*.pem
+*.key
+>>>>>>> Stashed changes

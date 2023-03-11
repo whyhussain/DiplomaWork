@@ -1,7 +1,7 @@
 package main
 
 import (
-	app "DiplomaWork/internal/app"
+	"DiplomaWork/internal/app"
 	"context"
 	"fmt"
 	"os"
