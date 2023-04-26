@@ -1123,7 +1123,7 @@ func (h *DipHandler) AddDeliveryPersonnel(c echo.Context) error {
 	}
 	availabilityStatus := model.DeliveryPersonnelAvailability(availabilityStatusNum)
 
-	deliveryPersonnels, err := h.service.AddDeliveryPersonnel(ctx, deliveryPersonnel.Name, deliveryPersonnel.Email, deliveryPersonnel.Password, availabilityStatus)
+	deliveryPersonnels, err := h.service.AddDeliveryPersonnel(ctx, deliveryPersonnel, availabilityStatus)
 
 	//deliveryPersonnels, err := h.service.AddDeliveryPersonnel(ctx, deliveryPersonnel.Name, deliveryPersonnel.Email, deliveryPersonnel.Password, deliveryPersonnel.AvailabilityStatus)
 	if err != nil {

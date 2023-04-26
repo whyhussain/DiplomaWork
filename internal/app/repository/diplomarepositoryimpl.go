@@ -4,6 +4,7 @@ import (
 	"DiplomaWork/internal/app/model"
 	"context"
 	"fmt"
+	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"time"
 )
@@ -28,7 +29,7 @@ func (afr *DiplomaServiceRepository) FindAllRestaurants(ctx context.Context) ([]
 	for rows.Next() {
 		rest := model.RestaurantsModel{}
 		rows.Scan(&rest.Id, &rest.RestaurantName, &rest.CategoryID, &rest.PartnerId, &rest.Address, &rest.City, &rest.PriceOfService,
-		&rest.RestaurantUIN, &rest.PhoneNumber, &rest.Rating, &rest.Schedule)
+			&rest.RestaurantUIN, &rest.PhoneNumber, &rest.Rating, &rest.Schedule)
 		restaurants = append(restaurants, &rest)
 	}
 	return restaurants, nil
@@ -57,7 +58,7 @@ func (afr *DiplomaServiceRepository) FindRestaurantById(ctx context.Context, id 
 	return restaurant, nil
 }
 
-func (afr *DiplomaServiceRepository) AddRestaurants(ctx context.Context, RestaurantName string, CategoryID int, PartnerId int, Address string, 
+func (afr *DiplomaServiceRepository) AddRestaurants(ctx context.Context, RestaurantName string, CategoryID int, PartnerId int, Address string,
 	City string, PriceOfService int, RestaurantUIN int, PhoneNumber string, Rating float64, Schedule []model.Schedule) (string, error) {
 	query := ` SELECT * FROM restaurants WHERE restaurant_name =$1 AND category_id =$2 AND partner_id =$3 AND address =$4 AND city =$5 
 	AND price_of_service =$6 AND restaurant_uin =$7 AND phone_number=$8 AND rating=$9 AND schedule=$10`
@@ -188,7 +189,6 @@ func (afr *DiplomaServiceRepository) DeleteCategory(ctx context.Context, id int)
 	return nil
 }
 
-
 func (afr *DiplomaServiceRepository) FindAllMenu(ctx context.Context) ([]*model.Menu, error) {
 	menus := []*model.Menu{}
 
@@ -278,9 +278,6 @@ func (afr *DiplomaServiceRepository) UpdateMenu(ctx context.Context, menu *model
 	return menu, nil
 }
 
-
-
-
 func (afr *DiplomaServiceRepository) FindAllPartners(ctx context.Context) ([]*model.Partner, error) {
 	partners := []*model.Partner{}
 
@@ -359,8 +356,6 @@ func (afr *DiplomaServiceRepository) DeletePartnerById(ctx context.Context, id i
 	return nil
 }
 
-
-
 func (afr *DiplomaServiceRepository) FindAllAdmins(ctx context.Context) ([]*model.Admin, error) {
 	admins := []*model.Admin{}
 
@@ -437,8 +432,6 @@ func (afr *DiplomaServiceRepository) DeleteAdminById(ctx context.Context, id int
 	}
 	return nil
 }
-
-
 
 func (afr *DiplomaServiceRepository) FindAllTechSupports(ctx context.Context) ([]*model.TechSupport, error) {
 	techSupports := []*model.TechSupport{}
@@ -519,8 +512,6 @@ func (afr *DiplomaServiceRepository) DeleteTechSupportById(ctx context.Context, 
 	return nil
 }
 
-
-
 func (afr *DiplomaServiceRepository) FindAllCustomers(ctx context.Context) ([]*model.Customer, error) {
 	customers := []*model.Customer{}
 
@@ -583,7 +574,7 @@ func (afr *DiplomaServiceRepository) UpdateCustomerById(ctx context.Context, cus
 	}
 
 	query := `UPDATE customers SET name=$1, email=$2, password=$3, delivery_address=$4, city=$5, birthdate=$6 WHERE id = $7`
-	_, err := afr.db.Exec(ctx, query, customer.Name, customer.Email, customer.Password,customer.DeliveryAddress, customer.City, customer.Birthdate, customer.Id)
+	_, err := afr.db.Exec(ctx, query, customer.Name, customer.Email, customer.Password, customer.DeliveryAddress, customer.City, customer.Birthdate, customer.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -599,7 +590,6 @@ func (afr *DiplomaServiceRepository) DeleteCustomerById(ctx context.Context, id 
 	}
 	return nil
 }
-
 
 func (afr *DiplomaServiceRepository) FindAllReviews(ctx context.Context) ([]*model.Review, error) {
 	reviews := []*model.Review{}
@@ -681,9 +671,6 @@ func (afr *DiplomaServiceRepository) DeleteReviewById(ctx context.Context, id in
 	return nil
 }
 
-
-
-
 func (afr *DiplomaServiceRepository) FindAllSchedules(ctx context.Context) ([]*model.Schedule, error) {
 	schedules := []*model.Schedule{}
 
@@ -764,9 +751,6 @@ func (afr *DiplomaServiceRepository) DeleteScheduleById(ctx context.Context, id 
 	return nil
 }
 
-
-
-
 func (afr *DiplomaServiceRepository) FindAllDeliveryPersonnels(ctx context.Context) ([]*model.DeliveryPersonnel, error) {
 	deliveryPersonnels := []*model.DeliveryPersonnel{}
 
@@ -797,15 +781,15 @@ func (afr *DiplomaServiceRepository) FindDeliveryPersonnelById(ctx context.Conte
 		var availabilityStatus string
 		err := rows.Scan(&deliveryPersonnel.Id, &deliveryPersonnel.Name, &deliveryPersonnel.Email, &deliveryPersonnel.Password, &availabilityStatus)
 		switch availabilityStatus {
-        case "Available":
-            deliveryPersonnel.AvailabilityStatus = model.Available
-        case "Busy":
-            deliveryPersonnel.AvailabilityStatus = model.Busy
-        case "Offline":
-            deliveryPersonnel.AvailabilityStatus = model.Offline
-        default:
-            fmt.Println("unknown availability status:", availabilityStatus)
-        }
+		case "Available":
+			deliveryPersonnel.AvailabilityStatus = model.Available
+		case "Busy":
+			deliveryPersonnel.AvailabilityStatus = model.Busy
+		case "Offline":
+			deliveryPersonnel.AvailabilityStatus = model.Offline
+		default:
+			fmt.Println("unknown availability status:", availabilityStatus)
+		}
 		if err != nil {
 			return nil, err
 		}
@@ -816,9 +800,21 @@ func (afr *DiplomaServiceRepository) FindDeliveryPersonnelById(ctx context.Conte
 	return deliveryPersonnel, nil
 }
 
-func (afr *DiplomaServiceRepository) AddDeliveryPersonnel(ctx context.Context, Name string, Email string, Password string, AvailabilityStatus model.DeliveryPersonnelAvailability) (string, error) {
+func (afr *DiplomaServiceRepository) AddDeliveryPersonnel(ctx context.Context, Personel *model.DeliveryPersonnel, AvailabilityStatus model.DeliveryPersonnelAvailability) (string, error) {
 	query := ` SELECT name, email, password, availability_status from delivery_personnel WHERE name=$1 AND email=$2 AND password=$3 AND availability_status=$4`
-	rows, err := afr.db.Query(ctx, query, Name, Email, Password, AvailabilityStatus)
+
+	tx, txErr := afr.db.BeginTx(ctx, pgx.TxOptions{
+		IsoLevel:   pgx.ReadCommitted,
+		AccessMode: pgx.ReadWrite,
+	})
+	if txErr != nil {
+		errMsg := fmt.Sprintf("Cannot start transaction")
+		return errMsg, txErr
+	}
+	rows, err := tx.Query(ctx, query, Personel.Name, Personel.Email, Personel.Password, AvailabilityStatus)
+	if err != nil {
+		tx.Rollback(ctx)
+	}
 	if rows.Next() {
 		return "we have this delivery_personnel", err
 	}
@@ -826,10 +822,12 @@ func (afr *DiplomaServiceRepository) AddDeliveryPersonnel(ctx context.Context, N
     NOT EXISTS (
         SELECT name, email, password, availability_status FROM delivery_personnel WHERE name=$5 AND email=$6 AND password=$7 AND availability_status=$8
     );`
-	_, err = afr.db.Query(ctx, query, Name, Email, Password, AvailabilityStatus, Name, Email, Password, AvailabilityStatus)
+	_, err = tx.Query(ctx, query, Personel.Name, Personel.Email, Personel.Password, AvailabilityStatus, Personel.Name, Personel.Email, Personel.Password, AvailabilityStatus)
 	if err != nil {
 		return err.Error(), err
+		tx.Rollback(ctx)
 	}
+	tx.Commit(ctx)
 
 	return "delivery_personnel created", nil
 }
@@ -855,5 +853,3 @@ func (afr *DiplomaServiceRepository) DeleteDeliveryPersonnelById(ctx context.Con
 	}
 	return nil
 }
-
-

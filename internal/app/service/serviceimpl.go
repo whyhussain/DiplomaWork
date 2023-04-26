@@ -30,7 +30,7 @@ func (as *DiplomaServiceImpl) GetRestaurantById(ctx context.Context, id int) (*m
 	return restaurant, nil
 }
 func (as *DiplomaServiceImpl) AddRestaurant(ctx context.Context, RestaurantName string, CategoryID int, PartnerId int, Address string, City string, PriceOfService int, RestaurantUIN int, PhoneNumber string, Rating float64, Schedule []model.Schedule) (string, error) {
-	msg, err := as.dipRepository.AddRestaurants(ctx, RestaurantName, CategoryID, PartnerId, Address, 
+	msg, err := as.dipRepository.AddRestaurants(ctx, RestaurantName, CategoryID, PartnerId, Address,
 		City, PriceOfService, RestaurantUIN, PhoneNumber, Rating, Schedule)
 	if err != nil {
 		return msg, err
@@ -130,7 +130,6 @@ func (as *DiplomaServiceImpl) UpdateMenu(ctx context.Context, menu *model.Menu) 
 	return nil
 }
 
-
 func (as *DiplomaServiceImpl) GetPartners(ctx context.Context) ([]*model.Partner, error) {
 	partners, err := as.dipRepository.FindAllPartners(ctx)
 	if err != nil {
@@ -169,7 +168,6 @@ func (as *DiplomaServiceImpl) DeletePartnerById(ctx context.Context, id int) err
 	}
 	return nil
 }
-
 
 func (as *DiplomaServiceImpl) GetAdmins(ctx context.Context) ([]*model.Admin, error) {
 	admins, err := as.dipRepository.FindAllAdmins(ctx)
@@ -210,7 +208,6 @@ func (as *DiplomaServiceImpl) DeleteAdminById(ctx context.Context, id int) error
 	return nil
 }
 
-
 func (as *DiplomaServiceImpl) GetTechSupports(ctx context.Context) ([]*model.TechSupport, error) {
 	techSupports, err := as.dipRepository.FindAllTechSupports(ctx)
 	if err != nil {
@@ -249,10 +246,6 @@ func (as *DiplomaServiceImpl) DeleteTechSupportById(ctx context.Context, id int)
 	}
 	return nil
 }
-
-
-
-
 
 func (as *DiplomaServiceImpl) GetCustomers(ctx context.Context) ([]*model.Customer, error) {
 	customers, err := as.dipRepository.FindAllCustomers(ctx)
@@ -293,7 +286,6 @@ func (as *DiplomaServiceImpl) DeleteCustomerById(ctx context.Context, id int) er
 	return nil
 }
 
-
 func (as *DiplomaServiceImpl) GetReviews(ctx context.Context) ([]*model.Review, error) {
 	reviews, err := as.dipRepository.FindAllReviews(ctx)
 	if err != nil {
@@ -332,8 +324,6 @@ func (as *DiplomaServiceImpl) DeleteReviewById(ctx context.Context, id int) erro
 	}
 	return nil
 }
-
-
 
 func (as *DiplomaServiceImpl) GetSchedules(ctx context.Context) ([]*model.Schedule, error) {
 	schedules, err := as.dipRepository.FindAllSchedules(ctx)
@@ -374,7 +364,6 @@ func (as *DiplomaServiceImpl) DeleteScheduleById(ctx context.Context, id int) er
 	return nil
 }
 
-
 func (as *DiplomaServiceImpl) GetDeliveryPersonnels(ctx context.Context) ([]*model.DeliveryPersonnel, error) {
 	deliveryPersonnels, err := as.dipRepository.FindAllDeliveryPersonnels(ctx)
 	if err != nil {
@@ -391,8 +380,8 @@ func (as *DiplomaServiceImpl) GetDeliveryPersonnelById(ctx context.Context, id i
 	return deliveryPersonnel, nil
 }
 
-func (as *DiplomaServiceImpl) AddDeliveryPersonnel(ctx context.Context, Name string, Email string, Password string, AvailabilityStatus model.DeliveryPersonnelAvailability) (string, error) {
-	msg, err := as.dipRepository.AddDeliveryPersonnel(ctx, Name, Email, Password, AvailabilityStatus)
+func (as *DiplomaServiceImpl) AddDeliveryPersonnel(ctx context.Context, personnel *model.DeliveryPersonnel, AvailabilityStatus model.DeliveryPersonnelAvailability) (string, error) {
+	msg, err := as.dipRepository.AddDeliveryPersonnel(ctx, personnel, AvailabilityStatus)
 	if err != nil {
 		return msg, err
 	}
