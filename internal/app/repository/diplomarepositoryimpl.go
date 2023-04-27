@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"log"
 	"time"
 )
 
@@ -754,14 +755,17 @@ func (afr *DiplomaServiceRepository) DeleteScheduleById(ctx context.Context, id 
 func (afr *DiplomaServiceRepository) FindAllDeliveryPersonnels(ctx context.Context) ([]*model.DeliveryPersonnel, error) {
 	deliveryPersonnels := []*model.DeliveryPersonnel{}
 
-	query := `select * from delivery_personnel`
+	query := `select * from delivery_personnell`
 	rows, err := afr.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
 		deliveryPersonnel := model.DeliveryPersonnel{}
-		rows.Scan(&deliveryPersonnel.Id, &deliveryPersonnel.Name, &deliveryPersonnel.Email, &deliveryPersonnel.Password, &deliveryPersonnel.AvailabilityStatus)
+		err := rows.Scan(&deliveryPersonnel.Id, &deliveryPersonnel.Name, &deliveryPersonnel.Email, &deliveryPersonnel.Password)
+		if err != nil {
+			log.Println(err)
+		}
 		deliveryPersonnels = append(deliveryPersonnels, &deliveryPersonnel)
 	}
 	return deliveryPersonnels, nil
@@ -801,7 +805,7 @@ func (afr *DiplomaServiceRepository) FindDeliveryPersonnelById(ctx context.Conte
 }
 
 func (afr *DiplomaServiceRepository) AddDeliveryPersonnel(ctx context.Context, Personel *model.DeliveryPersonnel, AvailabilityStatus model.DeliveryPersonnelAvailability) (string, error) {
-	query := ` SELECT name, email, password, availability_status from delivery_personnel WHERE name=$1 AND email=$2 AND password=$3 AND availability_status=$4`
+	query := ` SELECT name, email, password, availability_status from delivery_personnell WHERE name=$1 AND email=$2 AND password=$3`
 
 	tx, txErr := afr.db.BeginTx(ctx, pgx.TxOptions{
 		IsoLevel:   pgx.ReadCommitted,
@@ -811,23 +815,20 @@ func (afr *DiplomaServiceRepository) AddDeliveryPersonnel(ctx context.Context, P
 		errMsg := fmt.Sprintf("Cannot start transaction")
 		return errMsg, txErr
 	}
-	rows, err := tx.Query(ctx, query, Personel.Name, Personel.Email, Personel.Password, AvailabilityStatus)
+	rows, err := tx.Query(ctx, query, Personel.Name, Personel.Email, Personel.Password)
 	if err != nil {
 		tx.Rollback(ctx)
 	}
 	if rows.Next() {
 		return "we have this delivery_personnel", err
 	}
-	query = `insert into delivery_personnel(name, email, password, availability_status)SELECT $1,$2,$3,$4 where
-    NOT EXISTS (
-        SELECT name, email, password, availability_status FROM delivery_personnel WHERE name=$5 AND email=$6 AND password=$7 AND availability_status=$8
-    );`
-	_, err = tx.Query(ctx, query, Personel.Name, Personel.Email, Personel.Password, AvailabilityStatus, Personel.Name, Personel.Email, Personel.Password, AvailabilityStatus)
+	query = `insert into delivery_personnell(name, email, password)values($1,$2,$3);`
+	_, err = tx.Exec(ctx, query, Personel.Name, Personel.Email, Personel.Password)
 	if err != nil {
 		return err.Error(), err
 		tx.Rollback(ctx)
 	}
-	tx.Commit(ctx)
+	defer tx.Commit(ctx)
 
 	return "delivery_personnel created", nil
 }

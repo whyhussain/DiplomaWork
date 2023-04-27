@@ -6,7 +6,6 @@ import (
 	"DiplomaWork/internal/app/repository"
 	"DiplomaWork/internal/app/service"
 	"github.com/joho/godotenv"
-
 	//"DiplomaWork/internal/app/repository"
 	//"DiplomaWork/internal/app/service"
 	"context"
@@ -21,7 +20,7 @@ func StartNumbleServie(ctx context.Context, errCh chan<- error) {
 	godotenv.Load()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	godotenv.Load(".env")
+	//godotenv.Load(".env")
 	//dbPass := os.Getenv("db_pass")
 	//dbIP := os.Getenv("db_ip")
 	//urlDb := "postgres://postgres:" + dbPass + "@" + dbIP + ":5432/diploma"

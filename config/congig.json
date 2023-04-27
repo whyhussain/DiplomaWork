@@ -1,6 +1,6 @@
 
 {
   "database": {
-    "primary" : "user=postuser password=Xx4Usd3cCPyDfz65 dbname=diploma sslmode=disable host=152.70.184.41 port=5432"
+    "primary" : "user=postgres password=Xx4Usd3cCPyDfz65 dbname=diploma sslmode=disable host=152.70.184.41 port=5432"
   }
 }

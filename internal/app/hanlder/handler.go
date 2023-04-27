@@ -1117,13 +1117,13 @@ func (h *DipHandler) AddDeliveryPersonnel(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, fmt.Errorf("missing parameter").Error())
 	}
 
-	availabilityStatusNum, err := strconv.Atoi(c.FormValue("availability_status"))
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, fmt.Errorf("invalid availability_status").Error())
-	}
-	availabilityStatus := model.DeliveryPersonnelAvailability(availabilityStatusNum)
+	//availabilityStatusNum, err := strconv.Atoi(c.FormValue("availability_status"))
+	//if err != nil {
+	//	return c.JSON(http.StatusBadRequest, fmt.Errorf("invalid availability_status").Error())
+	//}
+	//availabilityStatus := model.DeliveryPersonnelAvailability(availabilityStatusNum)
 
-	deliveryPersonnels, err := h.service.AddDeliveryPersonnel(ctx, deliveryPersonnel, availabilityStatus)
+	deliveryPersonnels, err := h.service.AddDeliveryPersonnel(ctx, deliveryPersonnel, 1)
 
 	//deliveryPersonnels, err := h.service.AddDeliveryPersonnel(ctx, deliveryPersonnel.Name, deliveryPersonnel.Email, deliveryPersonnel.Password, deliveryPersonnel.AvailabilityStatus)
 	if err != nil {
