@@ -64,7 +64,7 @@ type DiplomaService interface {
 
 	GetDeliveryPersonnels(ctx context.Context) ([]*model.DeliveryPersonnel, error)
 	GetDeliveryPersonnelById(ctx context.Context, id int) (*model.DeliveryPersonnel, error)
-	AddDeliveryPersonnel(ctx context.Context, personnel *model.DeliveryPersonnel, AvailabilityStatus model.DeliveryPersonnelAvailability) (string, error)
+	AddDeliveryPersonnel(ctx context.Context, Name string, Email string, Password string, AvailabilityStatus model.DeliveryPersonnelAvailability) (string, error)
 	UpdateDeliveryPersonnelById(ctx context.Context, deliveryPersonnel *model.DeliveryPersonnel) error
 	DeleteDeliveryPersonnelById(ctx context.Context, id int) error
 }

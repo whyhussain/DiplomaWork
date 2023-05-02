@@ -11,7 +11,7 @@ type Config struct {
 }
 
 func NewConfig() *Config {
-	a, err := os.ReadFile("/Users/abdulvahir/GolandProjects/DiplomaWork/config/congig.json")
+	a, err := os.ReadFile("/Users/Legion/Desktop/djangoFinal/project/DiplomaWork/config/congig.json")
 	if err != nil {
 		fmt.Println("asaaaaaaaa")
 	}

@@ -762,7 +762,7 @@ func (afr *DiplomaServiceRepository) FindAllDeliveryPersonnels(ctx context.Conte
 	}
 	for rows.Next() {
 		deliveryPersonnel := model.DeliveryPersonnel{}
-		err := rows.Scan(&deliveryPersonnel.Id, &deliveryPersonnel.Name, &deliveryPersonnel.Email, &deliveryPersonnel.Password)
+		err := rows.Scan(&deliveryPersonnel.Id, &deliveryPersonnel.Name, &deliveryPersonnel.Email, &deliveryPersonnel.Password, &deliveryPersonnel.AvailabilityStatus)
 		if err != nil {
 			log.Println(err)
 		}
@@ -774,7 +774,7 @@ func (afr *DiplomaServiceRepository) FindAllDeliveryPersonnels(ctx context.Conte
 func (afr *DiplomaServiceRepository) FindDeliveryPersonnelById(ctx context.Context, id int) (*model.DeliveryPersonnel, error) {
 	deliveryPersonnel := &model.DeliveryPersonnel{}
 
-	query := `SELECT * FROM delivery_personnel WHERE id = $1`
+	query := `SELECT * FROM delivery_personnell WHERE id = $1`
 	rows, err := afr.db.Query(ctx, query, id)
 	if err != nil {
 		return nil, err
@@ -782,18 +782,8 @@ func (afr *DiplomaServiceRepository) FindDeliveryPersonnelById(ctx context.Conte
 	defer rows.Close()
 
 	if rows.Next() {
-		var availabilityStatus string
-		err := rows.Scan(&deliveryPersonnel.Id, &deliveryPersonnel.Name, &deliveryPersonnel.Email, &deliveryPersonnel.Password, &availabilityStatus)
-		switch availabilityStatus {
-		case "Available":
-			deliveryPersonnel.AvailabilityStatus = model.Available
-		case "Busy":
-			deliveryPersonnel.AvailabilityStatus = model.Busy
-		case "Offline":
-			deliveryPersonnel.AvailabilityStatus = model.Offline
-		default:
-			fmt.Println("unknown availability status:", availabilityStatus)
-		}
+		err := rows.Scan(&deliveryPersonnel.Id, &deliveryPersonnel.Name, &deliveryPersonnel.Email, &deliveryPersonnel.Password, &deliveryPersonnel.AvailabilityStatus)
+
 		if err != nil {
 			return nil, err
 		}
@@ -804,7 +794,11 @@ func (afr *DiplomaServiceRepository) FindDeliveryPersonnelById(ctx context.Conte
 	return deliveryPersonnel, nil
 }
 
-func (afr *DiplomaServiceRepository) AddDeliveryPersonnel(ctx context.Context, Personel *model.DeliveryPersonnel, AvailabilityStatus model.DeliveryPersonnelAvailability) (string, error) {
+func (afr *DiplomaServiceRepository) AddDeliveryPersonnel(ctx context.Context, Name string, Email string, Password string, AvailabilityStatus model.DeliveryPersonnelAvailability) (string, error) {
+
+	if err := AvailabilityStatus.Validate(); err != nil {
+		return "invalid delivery personnel availability", err
+	}
 	query := ` SELECT name, email, password, availability_status from delivery_personnell WHERE name=$1 AND email=$2 AND password=$3`
 
 	tx, txErr := afr.db.BeginTx(ctx, pgx.TxOptions{
@@ -815,15 +809,15 @@ func (afr *DiplomaServiceRepository) AddDeliveryPersonnel(ctx context.Context, P
 		errMsg := fmt.Sprintf("Cannot start transaction")
 		return errMsg, txErr
 	}
-	rows, err := tx.Query(ctx, query, Personel.Name, Personel.Email, Personel.Password)
+	rows, err := tx.Query(ctx, query, Name, Email, Password, AvailabilityStatus)
 	if err != nil {
 		tx.Rollback(ctx)
 	}
 	if rows.Next() {
 		return "we have this delivery_personnel", err
 	}
-	query = `insert into delivery_personnell(name, email, password)values($1,$2,$3);`
-	_, err = tx.Exec(ctx, query, Personel.Name, Personel.Email, Personel.Password)
+	query = `insert into delivery_personnell(name, email, password, availability_status)values($1,$2,$3,$4);`
+	_, err = tx.Exec(ctx, query, Name, Email, Password, AvailabilityStatus)
 	if err != nil {
 		return err.Error(), err
 		tx.Rollback(ctx)
@@ -837,7 +831,11 @@ func (afr *DiplomaServiceRepository) UpdateDeliveryPersonnelById(ctx context.Con
 		return nil, fmt.Errorf("database connection is nil")
 	}
 
-	query := `UPDATE delivery_personnel SET name=$1, email=$2, password=$3, availability_status=$4 WHERE id = $5`
+	if err := deliveryPersonnel.AvailabilityStatus.Validate(); err != nil {
+		return nil, err
+	}
+
+	query := `UPDATE delivery_personnell SET name=$1, email=$2, password=$3, availability_status=$4 WHERE id = $5`
 	_, err := afr.db.Exec(ctx, query, deliveryPersonnel.Name, deliveryPersonnel.Email, deliveryPersonnel.Password, deliveryPersonnel.AvailabilityStatus, deliveryPersonnel.Id)
 	if err != nil {
 		return nil, err
@@ -847,7 +845,7 @@ func (afr *DiplomaServiceRepository) UpdateDeliveryPersonnelById(ctx context.Con
 }
 
 func (afr *DiplomaServiceRepository) DeleteDeliveryPersonnelById(ctx context.Context, id int) error {
-	query := `DELETE FROM delivery_personnel WHERE id=$1`
+	query := `DELETE FROM delivery_personnell WHERE id=$1`
 	_, err := afr.db.Exec(ctx, query, id)
 	if err != nil {
 		return err

@@ -380,8 +380,8 @@ func (as *DiplomaServiceImpl) GetDeliveryPersonnelById(ctx context.Context, id i
 	return deliveryPersonnel, nil
 }
 
-func (as *DiplomaServiceImpl) AddDeliveryPersonnel(ctx context.Context, personnel *model.DeliveryPersonnel, AvailabilityStatus model.DeliveryPersonnelAvailability) (string, error) {
-	msg, err := as.dipRepository.AddDeliveryPersonnel(ctx, personnel, AvailabilityStatus)
+func (as *DiplomaServiceImpl) AddDeliveryPersonnel(ctx context.Context, Name string, Email string, Password string, AvailabilityStatus model.DeliveryPersonnelAvailability) (string, error) {
+	msg, err := as.dipRepository.AddDeliveryPersonnel(ctx, Name, Email, Password, AvailabilityStatus)
 	if err != nil {
 		return msg, err
 	}
