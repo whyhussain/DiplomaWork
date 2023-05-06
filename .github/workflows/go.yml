@@ -23,8 +23,8 @@ jobs:
 
     - name: Build
       run: |
-        go build -v ./... -o built.go \
-          ls -la
+        go build -v ./... -o built.go;
+        ls -la
     - name: Upload Go test results
       uses: actions/upload-artifact@v3
       with:
