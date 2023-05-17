@@ -36,6 +36,9 @@ func StartNumbleServie(ctx context.Context, errCh chan<- error) {
 	repo := repository.NewDiplomaRepository(a)
 	srv := service.NewDiplomaService(repo)
 	handlers := hanlder.NewDiplomaHandler(srv)
+
+	e.POST("/users", handlers.CreateUser)
+
 	e.GET("/restaurants", handlers.GetAllRestaurants)
 	e.GET("/restaurants/:id", handlers.GetRestaurantById)
 	e.PUT("/restaurants/:id", handlers.UpdateRestaurantById)

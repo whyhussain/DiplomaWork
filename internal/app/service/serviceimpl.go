@@ -4,6 +4,8 @@ import (
 	"DiplomaWork/internal/app/model"
 	"DiplomaWork/internal/app/repository"
 	"context"
+	"encoding/base64"
+	"github.com/dgrijalva/jwt-go"
 	"time"
 )
 
@@ -401,4 +403,31 @@ func (as *DiplomaServiceImpl) DeleteDeliveryPersonnelById(ctx context.Context, i
 		return err
 	}
 	return nil
+}
+func (as *DiplomaServiceImpl) AddUser(ctx context.Context, username, email string, password [32]byte) (token *model.Token, error error) {
+	bytes := password[:]
+	passwordhash := base64.StdEncoding.EncodeToString(bytes)
+	id, err := as.dipRepository.AddUser(ctx, username, email, passwordhash)
+	if err != nil {
+
+		return nil, err
+	}
+
+	signer := jwt.NewWithClaims(jwt.SigningMethodHS256, &jwt.MapClaims{
+		"username": username,
+		"email":    email,
+	})
+
+	// Create the JWT token.
+	tokenjwt, err := signer.SignedString([]byte("AllYourBase"))
+	if err != nil {
+		panic(err)
+	}
+
+	atoken := model.Token{Token: tokenjwt}
+	err = as.dipRepository.AddToken(ctx, id, tokenjwt)
+	if err != nil {
+		return nil, err
+	}
+	return &atoken, nil
 }

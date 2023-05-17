@@ -67,4 +67,7 @@ type DiplomaRepository interface {
 	AddDeliveryPersonnel(ctx context.Context, Personel *model.DeliveryPersonnel, AvailabilityStatus model.DeliveryPersonnelAvailability) (string, error)
 	UpdateDeliveryPersonnelById(ctx context.Context, deliveryPersonnel *model.DeliveryPersonnel) (*model.DeliveryPersonnel, error)
 	DeleteDeliveryPersonnelById(ctx context.Context, id int) error
+
+	AddUser(ctx context.Context, username, email string, password string) (id int64, error error)
+	AddToken(ctx context.Context, id int64, token string) error
 }

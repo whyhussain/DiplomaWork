@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"log"
 	"time"
 )
 
@@ -852,4 +853,27 @@ func (afr *DiplomaServiceRepository) DeleteDeliveryPersonnelById(ctx context.Con
 		return err
 	}
 	return nil
+}
+func (afr *DiplomaServiceRepository) AddUser(ctx context.Context, username, email string, password string) (id int64, error error) {
+	stmt := `INSERT INTO users (username, email, password) VALUES ($1, $2, $3)`
+	r, err := afr.db.Exec(ctx, stmt, username, email, password)
+
+	if err != nil {
+		log.Println(err, err.Error())
+	}
+
+	return r.RowsAffected(), nil
+}
+
+func (afr *DiplomaServiceRepository) AddToken(ctx context.Context, id int64, token string) error {
+	stmt := `INSERT INTO tokens (user_id, token) VALUES ($1, $2)`
+	_, err := afr.db.Exec(ctx, stmt, id, token)
+
+	if err != nil {
+		log.Println(err, err.Error())
+		return err
+	}
+
+	return nil
+
 }

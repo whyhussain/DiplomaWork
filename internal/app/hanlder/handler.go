@@ -4,6 +4,7 @@ import (
 	"DiplomaWork/internal/app/model"
 	"DiplomaWork/internal/app/service"
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -62,11 +63,15 @@ func (h *DipHandler) AddRestaurant(c echo.Context) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	body := c.Request().Body
-	req, _ := io.ReadAll(body)
+	req, err := io.ReadAll(body)
+	if err != nil {
+		log.Println(err)
+		return c.JSON(http.StatusBadRequest, err)
+	}
 	defer body.Close()
 
 	rest := &model.RestaurantsModel{}
-	err := json.Unmarshal(req, rest)
+	err = json.Unmarshal(req, rest)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
@@ -1146,4 +1151,28 @@ func (h *DipHandler) DeleteDeliveryPersonnelById(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, "Failed to delete delivery personnel")
 	}
 	return c.NoContent(http.StatusOK)
+}
+
+func (h *DipHandler) CreateUser(c echo.Context) error {
+	// Get the username, email, and password from the request.
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	user := model.User{}
+	body, err := io.ReadAll(c.Request().Body)
+	if err != nil {
+		log.Println(err)
+		return c.JSON(http.StatusBadRequest, err)
+	}
+	err = json.Unmarshal(body, &user)
+	fmt.Println(user.Password)
+	passwordHash := sha256.Sum256([]byte(user.Password))
+
+	token, err := h.service.AddUser(ctx, user.Username, user.Email, passwordHash)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, err)
+	}
+	// Insert the user into the database.
+	// Return a success response.
+	return c.JSON(201, token)
 }
