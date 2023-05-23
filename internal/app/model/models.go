@@ -90,7 +90,6 @@ type Customer struct {
 	Birthdate       time.Time `json:"birthdate"`
 }
 
-<<<<<<< Updated upstream
 //type DeliveryStatus struct {
 //	Id   int    `json:"id"`
 //	OrderId int `json:"order_id"`
@@ -98,15 +97,6 @@ type Customer struct {
 //	OrderStatus OrderStatus `json:"delivery_status"`
 //	TimeOfDelivery int `json:"time_of_delivery"`
 //}
-=======
-type DeliveryStatus struct {
-	Id                  int         `json:"id"`
-	OrderId             int         `json:"order_id"`
-	DeliveryPersonnelId int         `json:"delivery_personnel_id"`
-	OrderStatus         OrderStatus `json:"delivery_status"`
-	TimeOfDelivery      int         `json:"time_of_delivery"`
-}
->>>>>>> Stashed changes
 
 type DeliveryPersonnelAvailability string
 
