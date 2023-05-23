@@ -6,9 +6,6 @@ import (
 )
 
 type RestaurantsModel struct {
-	Id             int    `json:"id"`
-	RestaurantName string `json:"restaurant_name"`
-	//RestaurantCategory string `json:"restaurant_category"`
 	CategoryID     int        `json:"category_id"`
 	PartnerId      int        `json:"partner_id"`
 	Address        string     `json:"address"`
@@ -35,43 +32,41 @@ type Category struct {
 }
 
 type Menu struct {
-	Id         int    `json:"id"`
-	Name       string `json:"name"`
-	CategoryId int    `json:"category_id"`
-	//Photo        uuid.UUID `json:"photo"`
 	RestaurantId int    `json:"restaurant_id"`
 	Description  string `json:"description"`
 	Price        int32  `json:"price"`
 }
 
-// type OrderStatus int
-// const (
-//     Placed OrderStatus = iota
-//     Accepted
-//     Shipped
-//     Canceled
-// 	Completed
-// )
+type OrderStatus int
 
-// type Order struct {
-// 	Id   int    `json:"id"`
-// 	RestaurantId int `json:"restaurant_id"`
-// 	CustomerId int `json:"customer_id"`
-// 	DeliveryPersonnelId int `json:"delivery_personnel_id"`
-// 	MenuId int `json:"menu_id"`
-// 	DeliveryAddress string `json:"delivery_address"`
-// 	DeliveryStatusId int `json:"delivery_status_id"`
-// 	TotalPrice int `json:"total_price"`
-// }
+const (
+	Placed OrderStatus = iota
+	Accepted
+	Shipped
+	Canceled
+	Completed
+)
 
-// type Role int
-// const (
-//     Admin Role = iota
-//     DeliveryPersonnel
-//     Customer
-//     Partner
-// 	TechSupport
-// )
+type Order struct {
+	Id                  int    `json:"id"`
+	RestaurantId        int    `json:"restaurant_id"`
+	CustomerId          int    `json:"customer_id"`
+	DeliveryPersonnelId int    `json:"delivery_personnel_id"`
+	MenuId              int    `json:"menu_id"`
+	DeliveryAddress     string `json:"delivery_address"`
+	DeliveryStatusId    int    `json:"delivery_status_id"`
+	TotalPrice          int    `json:"total_price"`
+}
+
+type Role int
+
+const (
+	Admin Role = iota
+	DeliveryPersonnel
+	Customer
+	Partner
+	TechSupport
+)
 
 type Partner struct {
 	Id       int    `json:"id"`
@@ -90,6 +85,7 @@ type Customer struct {
 	Birthdate       time.Time `json:"birthdate"`
 }
 
+<<<<<<< Updated upstream
 //type DeliveryStatus struct {
 //	Id   int    `json:"id"`
 //	OrderId int `json:"order_id"`
@@ -97,6 +93,15 @@ type Customer struct {
 //	OrderStatus OrderStatus `json:"delivery_status"`
 //	TimeOfDelivery int `json:"time_of_delivery"`
 //}
+=======
+type DeliveryStatus struct {
+	Id                  int         `json:"id"`
+	OrderId             int         `json:"order_id"`
+	DeliveryPersonnelId int         `json:"delivery_personnel_id"`
+	OrderStatus         OrderStatus `json:"delivery_status"`
+	TimeOfDelivery      int         `json:"time_of_delivery"`
+}
+>>>>>>> Stashed changes
 
 type DeliveryPersonnelAvailability string
 
