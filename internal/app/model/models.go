@@ -6,6 +6,8 @@ import (
 )
 
 type RestaurantsModel struct {
+	Id             int        `json:"id"`
+	RestaurantName string     `json:"restaurant_name"`
 	CategoryID     int        `json:"category_id"`
 	PartnerId      int        `json:"partner_id"`
 	Address        string     `json:"address"`
@@ -32,6 +34,9 @@ type Category struct {
 }
 
 type Menu struct {
+	Id           int    `json:"id"`
+	Name         string `json:"name"`
+	CategoryId   int    `json:"category_id"`
 	RestaurantId int    `json:"restaurant_id"`
 	Description  string `json:"description"`
 	Price        int32  `json:"price"`
