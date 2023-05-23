@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type RestaurantsModel struct {
 	Id             int    `json:"id"`
@@ -87,21 +90,30 @@ type Customer struct {
 	Birthdate       time.Time `json:"birthdate"`
 }
 
-// type DeliveryStatus struct {
-// 	Id   int    `json:"id"`
-// 	OrderId int `json:"order_id"`
-// 	DeliveryPersonnelId int `json:"delivery_personnel_id"`
-// 	OrderStatus OrderStatus `json:"delivery_status"`
-// 	TimeOfDelivery int `json:"time_of_delivery"`
-// }
+//type DeliveryStatus struct {
+//	Id   int    `json:"id"`
+//	OrderId int `json:"order_id"`
+//	DeliveryPersonnelId int `json:"delivery_personnel_id"`
+//	OrderStatus OrderStatus `json:"delivery_status"`
+//	TimeOfDelivery int `json:"time_of_delivery"`
+//}
 
-type DeliveryPersonnelAvailability int
+type DeliveryPersonnelAvailability string
 
 const (
-	Available DeliveryPersonnelAvailability = iota
-	Busy
-	Offline
+	Available DeliveryPersonnelAvailability = "Available"
+	Busy      DeliveryPersonnelAvailability = "Busy"
+	Offline   DeliveryPersonnelAvailability = "Offline"
 )
+
+func (dpa DeliveryPersonnelAvailability) Validate() error {
+	switch dpa {
+	case Available, Busy, Offline:
+		return nil
+	default:
+		return fmt.Errorf("invalid delivery personnel availability: %s", dpa)
+	}
+}
 
 type DeliveryPersonnel struct {
 	Id                 int                           `json:"id"`
