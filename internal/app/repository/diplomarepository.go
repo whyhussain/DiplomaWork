@@ -64,7 +64,7 @@ type DiplomaRepository interface {
 
 	FindAllDeliveryPersonnels(ctx context.Context) ([]*model.DeliveryPersonnel, error)
 	FindDeliveryPersonnelById(ctx context.Context, id int) (*model.DeliveryPersonnel, error)
-	AddDeliveryPersonnel(ctx context.Context, Personel *model.DeliveryPersonnel, AvailabilityStatus model.DeliveryPersonnelAvailability) (string, error)
+	AddDeliveryPersonnel(ctx context.Context, Name string, Email string, Password string, AvailabilityStatus model.DeliveryPersonnelAvailability) (string, error)
 	UpdateDeliveryPersonnelById(ctx context.Context, deliveryPersonnel *model.DeliveryPersonnel) (*model.DeliveryPersonnel, error)
 	DeleteDeliveryPersonnelById(ctx context.Context, id int) error
 

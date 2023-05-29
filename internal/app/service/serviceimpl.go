@@ -382,14 +382,13 @@ func (as *DiplomaServiceImpl) GetDeliveryPersonnelById(ctx context.Context, id i
 	return deliveryPersonnel, nil
 }
 
-func (as *DiplomaServiceImpl) AddDeliveryPersonnel(ctx context.Context, personnel *model.DeliveryPersonnel, AvailabilityStatus model.DeliveryPersonnelAvailability) (string, error) {
-	msg, err := as.dipRepository.AddDeliveryPersonnel(ctx, personnel, AvailabilityStatus)
+func (as *DiplomaServiceImpl) AddDeliveryPersonnel(ctx context.Context, Name string, Email string, Password string, AvailabilityStatus model.DeliveryPersonnelAvailability) (string, error) {
+	msg, err := as.dipRepository.AddDeliveryPersonnel(ctx, Name, Email, Password, AvailabilityStatus)
 	if err != nil {
 		return msg, err
 	}
 	return msg, nil
 }
-
 func (as *DiplomaServiceImpl) UpdateDeliveryPersonnelById(ctx context.Context, deliveryPersonnel *model.DeliveryPersonnel) error {
 	_, err := as.dipRepository.UpdateDeliveryPersonnelById(ctx, deliveryPersonnel)
 	if err != nil {
