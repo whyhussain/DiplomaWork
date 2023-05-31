@@ -430,3 +430,84 @@ func (as *DiplomaServiceImpl) AddUser(ctx context.Context, username, email strin
 	}
 	return &atoken, nil
 }
+
+func (as *DiplomaServiceImpl) GetOrders(ctx context.Context) ([]*model.Order, error) {
+	orders, err := as.dipRepository.FindAllOrders(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return orders, nil
+}
+
+func (as *DiplomaServiceImpl) GetOrderById(ctx context.Context, id int) (*model.Order, error) {
+	order, err := as.dipRepository.FindOrderById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return order, nil
+}
+
+func (as *DiplomaServiceImpl) AddOrder(ctx context.Context, RestaurantId int, CustomerId int, DeliveryPersonnelId int, MenuId int, DeliveryAddress string,
+	DeliveryStatusId int, TotalPrice int) (string, error) {
+	msg, err := as.dipRepository.AddOrder(ctx, RestaurantId, CustomerId, DeliveryPersonnelId, MenuId, DeliveryAddress, DeliveryStatusId, TotalPrice)
+	if err != nil {
+		return msg, err
+	}
+	return msg, nil
+}
+
+func (as *DiplomaServiceImpl) DeleteOrderById(ctx context.Context, id int) error {
+	err := as.dipRepository.DeleteOrderById(ctx, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (as *DiplomaServiceImpl) UpdateOrderById(ctx context.Context, order *model.Order) error {
+	_, err := as.dipRepository.UpdateOrderById(ctx, order)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (as *DiplomaServiceImpl) GetDeliveryStatusList(ctx context.Context) ([]*model.DeliveryStatus, error) {
+	deliveryStatusList, err := as.dipRepository.FindAllDeliveryStatus(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return deliveryStatusList, nil
+}
+
+func (as *DiplomaServiceImpl) GetDeliveryStatusById(ctx context.Context, id int) (*model.DeliveryStatus, error) {
+	deliveryStatus, err := as.dipRepository.FindDeliveryStatusById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return deliveryStatus, nil
+}
+
+func (as *DiplomaServiceImpl) AddDeliveryStatus(ctx context.Context, OrderId int, DeliveryPersonnelId int, OrderStatus model.OrderStatus, TimeOfDelivery int) (string, error) {
+	msg, err := as.dipRepository.AddDeliveryStatus(ctx, OrderId, DeliveryPersonnelId, OrderStatus, TimeOfDelivery)
+	if err != nil {
+		return "", err
+	}
+	return msg, nil
+}
+
+func (as *DiplomaServiceImpl) DeleteDeliveryStatusById(ctx context.Context, id int) error {
+	err := as.dipRepository.DeleteDeliveryStatusById(ctx, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (as *DiplomaServiceImpl) UpdateDeliveryStatusById(ctx context.Context, deliveryStatus *model.DeliveryStatus) error {
+	_, err := as.dipRepository.UpdateDeliveryStatusById(ctx, deliveryStatus)
+	if err != nil {
+		return err
+	}
+	return nil
+}

@@ -872,3 +872,193 @@ func (afr *DiplomaServiceRepository) AddToken(ctx context.Context, id int64, tok
 	return nil
 
 }
+
+func (afr *DiplomaServiceRepository) FindAllOrders(ctx context.Context) ([]*model.Order, error) {
+	orders := []*model.Order{}
+
+	query := `select o.id, o.restaurant_id, o.customer_id, o.delivery_personnel_id, o.menu_id, o.delivery_address, o.delivery_status_id,
+       o.total_price from orders o`
+	rows, err := afr.db.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		order := model.Order{}
+		rows.Scan(&order.Id, &order.RestaurantId, &order.CustomerId, &order.DeliveryPersonnelId, &order.MenuId, &order.DeliveryAddress,
+			&order.DeliveryStatusId, &order.TotalPrice)
+		orders = append(orders, &order)
+	}
+	return orders, nil
+}
+
+func (afr *DiplomaServiceRepository) FindOrderById(ctx context.Context, id int) (*model.Order, error) {
+	order := &model.Order{}
+
+	query := `SELECT o.id, o.restaurant_id, o.customer_id, o.delivery_personnel_id, o.menu_id, o.delivery_address, o.delivery_status_id,
+       o.total_price FROM orders o WHERE o.id = $1`
+	rows, err := afr.db.Query(ctx, query, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		err := rows.Scan(&order.Id, &order.RestaurantId, &order.CustomerId, &order.DeliveryPersonnelId, &order.MenuId, &order.DeliveryAddress,
+			&order.DeliveryStatusId, &order.TotalPrice)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		return nil, fmt.Errorf("order with id %d not found", id)
+	}
+
+	return order, nil
+}
+
+func (afr *DiplomaServiceRepository) AddOrder(ctx context.Context, RestaurantId int, CustomerId int, DeliveryPersonnelId int, MenuId int, DeliveryAddress string,
+	DeliveryStatusId int, TotalPrice int) (string, error) {
+	query := `INSERT INTO orders(restaurant_id, customer_id, delivery_personnel_id, menu_id, delivery_address, delivery_status_id, total_price)
+		SELECT $1, $2, $3, $4, $5, $6, $7
+		WHERE NOT EXISTS (
+			SELECT * FROM orders WHERE restaurant_id=$8 AND customer_id=$9 AND delivery_personnel_id=$10 AND menu_id=$11 AND delivery_address=$12 AND delivery_status_id=$13 AND total_price=$14
+		)`
+	_, err := afr.db.Exec(ctx, query, RestaurantId, CustomerId, DeliveryPersonnelId, MenuId, DeliveryAddress, DeliveryStatusId, TotalPrice,
+		RestaurantId, CustomerId, DeliveryPersonnelId, MenuId, DeliveryAddress, DeliveryStatusId, TotalPrice)
+	if err != nil {
+		return err.Error(), err
+	}
+
+	return "order created", nil
+}
+
+func (afr *DiplomaServiceRepository) DeleteOrderById(ctx context.Context, id int) error {
+	query := `DELETE FROM orders WHERE id=$1`
+	_, err := afr.db.Exec(ctx, query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (afr *DiplomaServiceRepository) UpdateOrderById(ctx context.Context, order *model.Order) (*model.Order, error) {
+	if afr.db == nil {
+		return nil, fmt.Errorf("database connection is nil")
+	}
+
+	query := `UPDATE orders SET restaurant_id=$1,customer_id=$2,delivery_personnel_id=$3,menu_id=$4,delivery_address=$5,delivery_status_id=$6,total_price=$7 WHERE id = $8`
+	_, err := afr.db.Exec(ctx, query, order.RestaurantId, order.CustomerId, order.DeliveryPersonnelId, order.MenuId, order.DeliveryAddress,
+		order.DeliveryStatusId, order.TotalPrice, order.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	return order, nil
+}
+
+func (afr *DiplomaServiceRepository) FindAllDeliveryStatus(ctx context.Context) ([]*model.DeliveryStatus, error) {
+	deliveryStatusList := []*model.DeliveryStatus{}
+
+	query := `select d.id, d.delivery_personnel_id, d.time_of_delivery, d.order_status, d.order_id from delivery_status d`
+	rows, err := afr.db.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		deliveryStatus := model.DeliveryStatus{}
+		rows.Scan(&deliveryStatus.Id, &deliveryStatus.DeliveryPersonnelId, &deliveryStatus.TimeOfDelivery, &deliveryStatus.OrderStatus,
+			&deliveryStatus.OrderId)
+		deliveryStatusList = append(deliveryStatusList, &deliveryStatus)
+	}
+	return deliveryStatusList, nil
+}
+
+func (afr *DiplomaServiceRepository) FindDeliveryStatusById(ctx context.Context, id int) (*model.DeliveryStatus, error) {
+	deliveryStatus := &model.DeliveryStatus{}
+
+	query := `SELECT d.id, d.delivery_personnel_id, d.time_of_delivery, d.order_status, d.order_id from delivery_status d WHERE d.id = $1`
+	rows, err := afr.db.Query(ctx, query, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		err := rows.Scan(&deliveryStatus.Id, &deliveryStatus.DeliveryPersonnelId, &deliveryStatus.TimeOfDelivery, &deliveryStatus.OrderStatus,
+			&deliveryStatus.OrderId)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		return nil, fmt.Errorf("delivery status with id %d not found", id)
+	}
+
+	return deliveryStatus, nil
+}
+
+func (afr *DiplomaServiceRepository) AddDeliveryStatus(ctx context.Context, OrderId int, DeliveryPersonnelId int, OrderStatus model.OrderStatus, TimeOfDelivery int) (string, error) {
+	if err := OrderStatus.ValidateOrderStatus(); err != nil {
+		return "invalid order status", err
+	}
+
+	query := `SELECT order_id, delivery_personnel_id, order_status, time_of_delivery FROM delivery_status WHERE order_id = $1 AND delivery_personnel_id = $2 AND order_status = $3 AND time_of_delivery = $4`
+
+	tx, txErr := afr.db.BeginTx(ctx, pgx.TxOptions{
+		IsoLevel:   pgx.ReadCommitted,
+		AccessMode: pgx.ReadWrite,
+	})
+	if txErr != nil {
+		errMsg := fmt.Sprintf("Cannot start transaction")
+		return errMsg, txErr
+	}
+	defer tx.Rollback(ctx)
+
+	rows, err := tx.Query(ctx, query, OrderId, DeliveryPersonnelId, OrderStatus, TimeOfDelivery)
+	if err != nil {
+		return "", err
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		return "we have this delivery_status", nil
+	}
+
+	query = `INSERT INTO delivery_status (order_id, delivery_personnel_id, order_status, time_of_delivery) VALUES ($1, $2, $3, $4)`
+	_, err = tx.Exec(ctx, query, OrderId, DeliveryPersonnelId, OrderStatus, TimeOfDelivery)
+	if err != nil {
+		return "", err
+	}
+
+	err = tx.Commit(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	return "Delivery Status created", nil
+}
+
+func (afr *DiplomaServiceRepository) DeleteDeliveryStatusById(ctx context.Context, id int) error {
+	query := `DELETE FROM delivery_status WHERE id=$1`
+	_, err := afr.db.Exec(ctx, query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (afr *DiplomaServiceRepository) UpdateDeliveryStatusById(ctx context.Context, deliveryStatus *model.DeliveryStatus) (*model.DeliveryStatus, error) {
+	if afr.db == nil {
+		return nil, fmt.Errorf("database connection is nil")
+	}
+
+	if err := deliveryStatus.OrderStatus.ValidateOrderStatus(); err != nil {
+		return nil, err
+	}
+
+	query := `UPDATE delivery_status SET order_id=$1, delivery_personnel_id=$2, order_status=$3, time_of_delivery=$4  WHERE id = $5`
+	_, err := afr.db.Exec(ctx, query, deliveryStatus.OrderId, deliveryStatus.DeliveryPersonnelId, deliveryStatus.OrderStatus, deliveryStatus.TimeOfDelivery, deliveryStatus.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	return deliveryStatus, nil
+}

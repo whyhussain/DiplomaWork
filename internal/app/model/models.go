@@ -42,35 +42,14 @@ type Menu struct {
 	Price        int32  `json:"price"`
 }
 
-type OrderStatus int
-
-const (
-	Placed OrderStatus = iota
-	Accepted
-	Shipped
-	Canceled
-	Completed
-)
-
-type Order struct {
-	Id                  int    `json:"id"`
-	RestaurantId        int    `json:"restaurant_id"`
-	CustomerId          int    `json:"customer_id"`
-	DeliveryPersonnelId int    `json:"delivery_personnel_id"`
-	MenuId              int    `json:"menu_id"`
-	DeliveryAddress     string `json:"delivery_address"`
-	DeliveryStatusId    int    `json:"delivery_status_id"`
-	TotalPrice          int    `json:"total_price"`
-}
-
 type Role int
 
 const (
-	Admin Role = iota
-	DeliveryPersonnel
-	Customer
-	Partner
-	TechSupport
+	AdminId Role = iota
+	DeliveryPersonnelId
+	CustomerId
+	PartnerId
+	TechSupportId
 )
 
 type Partner struct {
@@ -90,13 +69,43 @@ type Customer struct {
 	Birthdate       time.Time `json:"birthdate"`
 }
 
-//type DeliveryStatus struct {
-//	Id   int    `json:"id"`
-//	OrderId int `json:"order_id"`
-//	DeliveryPersonnelId int `json:"delivery_personnel_id"`
-//	OrderStatus OrderStatus `json:"delivery_status"`
-//	TimeOfDelivery int `json:"time_of_delivery"`
-//}
+type OrderStatus string
+
+const (
+	Placed    OrderStatus = "Placed"
+	Accepted  OrderStatus = "Accepted"
+	Shipped   OrderStatus = "Shipped"
+	Canceled  OrderStatus = "Canceled"
+	Completed OrderStatus = "Completed"
+)
+
+func (os OrderStatus) ValidateOrderStatus() error {
+	switch os {
+	case Placed, Accepted, Shipped, Canceled, Completed:
+		return nil
+	default:
+		return fmt.Errorf("invalid order status: %s", os)
+	}
+}
+
+type Order struct {
+	Id                  int    `json:"id"`
+	RestaurantId        int    `json:"restaurant_id"`
+	CustomerId          int    `json:"customer_id"`
+	DeliveryPersonnelId int    `json:"delivery_personnel_id"`
+	MenuId              int    `json:"menu_id"`
+	DeliveryAddress     string `json:"delivery_address"`
+	DeliveryStatusId    int    `json:"delivery_status_id"`
+	TotalPrice          int    `json:"total_price"`
+}
+
+type DeliveryStatus struct {
+	Id                  int         `json:"id"`
+	OrderId             int         `json:"order_id"`
+	DeliveryPersonnelId int         `json:"delivery_personnel_id"`
+	OrderStatus         OrderStatus `json:"order_status"`
+	TimeOfDelivery      int         `json:"time_of_delivery"`
+}
 
 type DeliveryPersonnelAvailability string
 

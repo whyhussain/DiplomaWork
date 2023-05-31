@@ -1165,7 +1165,245 @@ func (h *DipHandler) CreateUser(c echo.Context) error {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, err)
 	}
-	// Insert the user into the database.
-	// Return a success response.
+
 	return c.JSON(201, token)
+}
+
+func (h *DipHandler) GetOrders(c echo.Context) error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	orders, err := h.service.GetOrders(ctx)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	//log.Println(json.Marshal(orders))
+
+	return c.JSON(http.StatusOK, orders)
+}
+
+func (h *DipHandler) GetOrderById(c echo.Context) error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	orderIdStr := c.Param("id")
+	orderId, err := strconv.Atoi(orderIdStr)
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "Invalid order ID")
+	}
+
+	order, err := h.service.GetOrderById(ctx, orderId)
+	if err != nil {
+		log.Println(err)
+		return c.JSON(http.StatusInternalServerError, "Error fetching order")
+	}
+
+	return c.JSON(http.StatusOK, order)
+}
+
+func (h *DipHandler) AddOrder(c echo.Context) error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	body := c.Request().Body
+	req, _ := io.ReadAll(body)
+	defer body.Close()
+
+	order := &model.Order{}
+	err := json.Unmarshal(req, order)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	if order.DeliveryAddress == "" {
+		return c.JSON(http.StatusBadRequest, fmt.Errorf("missing parameters").Error())
+	}
+
+	orders, err := h.service.AddOrder(ctx, order.RestaurantId, order.CustomerId, order.DeliveryPersonnelId, order.MenuId, order.DeliveryAddress, order.DeliveryStatusId, order.TotalPrice)
+	if err != nil {
+		log.Println(err)
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusCreated, orders)
+
+}
+
+func (h *DipHandler) DeleteOrderById(c echo.Context) error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	orderIdStr := c.Param("id")
+	orderId, err := strconv.Atoi(orderIdStr)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "Invalid order ID")
+	}
+
+	err = h.service.DeleteOrderById(ctx, orderId)
+	if err != nil {
+		log.Println(err)
+		return c.JSON(http.StatusInternalServerError, "Failed to delete order")
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
+func (h *DipHandler) UpdateOrderById(c echo.Context) error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	orderIdStr := c.Param("id")
+	orderId, err := strconv.Atoi(orderIdStr)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "Invalid order ID")
+	}
+	existingOrder, err := h.service.GetOrderById(ctx, orderId)
+	if err != nil {
+		log.Println(err)
+		return c.JSON(http.StatusInternalServerError, "Failed to update order")
+	}
+
+	var updateOrderFields = model.Order{Id: orderId}
+	if err := c.Bind(&updateOrderFields); err != nil {
+		log.Println("not binded update fields")
+		return c.JSON(http.StatusBadRequest, "Invalid request body")
+	}
+
+	if updateOrderFields.DeliveryAddress == "" {
+		return c.JSON(http.StatusBadRequest, fmt.Errorf("missing parameters").Error())
+	} else {
+		existingOrder.RestaurantId = updateOrderFields.RestaurantId
+		existingOrder.CustomerId = updateOrderFields.CustomerId
+		existingOrder.DeliveryPersonnelId = updateOrderFields.DeliveryPersonnelId
+		existingOrder.MenuId = updateOrderFields.MenuId
+		existingOrder.DeliveryAddress = updateOrderFields.DeliveryAddress
+		existingOrder.DeliveryStatusId = updateOrderFields.DeliveryStatusId
+		existingOrder.TotalPrice = updateOrderFields.TotalPrice
+	}
+
+	if err := h.service.UpdateOrderById(ctx, existingOrder); err != nil {
+		log.Println(err)
+		return c.JSON(http.StatusInternalServerError, "Failed to update order")
+	}
+
+	return c.JSON(http.StatusOK, existingOrder)
+}
+
+func (h *DipHandler) GetDeliveryStatusList(c echo.Context) error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	deliveryStatusList, err := h.service.GetDeliveryStatusList(ctx)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return c.JSON(http.StatusOK, deliveryStatusList)
+}
+
+func (h *DipHandler) GetDeliveryStatusById(c echo.Context) error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	deliveryStatusIdStr := c.Param("id")
+	deliveryStatusId, err := strconv.Atoi(deliveryStatusIdStr)
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "Invalid delivery status ID")
+	}
+
+	deliveryStatus, err := h.service.GetDeliveryStatusById(ctx, deliveryStatusId)
+	if err != nil {
+		log.Println(err)
+		return c.JSON(http.StatusInternalServerError, "Error fetching delivery status")
+	}
+
+	return c.JSON(http.StatusOK, deliveryStatus)
+}
+
+func (h *DipHandler) AddDeliveryStatus(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	body := c.Request().Body
+	defer body.Close()
+
+	req, err := io.ReadAll(body)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	deliveryStatus := &model.DeliveryStatus{}
+	err = json.Unmarshal(req, deliveryStatus)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	if deliveryStatus.TimeOfDelivery <= 0 {
+		return c.JSON(http.StatusBadRequest, fmt.Errorf("missing 'TimeOfDelivery' parameter").Error())
+	}
+
+	deliveryStatusList, err := h.service.AddDeliveryStatus(ctx, deliveryStatus.OrderId, deliveryStatus.DeliveryPersonnelId, deliveryStatus.OrderStatus, deliveryStatus.TimeOfDelivery)
+	if err != nil {
+		log.Println(err)
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusCreated, deliveryStatusList)
+}
+
+func (h *DipHandler) DeleteDeliveryStatusById(c echo.Context) error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	deliveryStatusIdStr := c.Param("id")
+	deliveryStatusId, err := strconv.Atoi(deliveryStatusIdStr)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "Invalid delivery Status ID")
+	}
+
+	err = h.service.DeleteDeliveryStatusById(ctx, deliveryStatusId)
+	if err != nil {
+		log.Println(err)
+		return c.JSON(http.StatusInternalServerError, "Failed to delete delivery Status")
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
+func (h *DipHandler) UpdateDeliveryStatusById(c echo.Context) error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	deliveryStatusIdStr := c.Param("id")
+	deliveryStatusId, err := strconv.Atoi(deliveryStatusIdStr)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "Invalid delivery Status ID")
+	}
+	existingDeliveryStatus, err := h.service.GetDeliveryStatusById(ctx, deliveryStatusId)
+	if err != nil {
+		log.Println(err)
+		return c.JSON(http.StatusInternalServerError, "Failed to update delivery Status")
+	}
+
+	var updateDeliveryStatusFields = model.DeliveryStatus{Id: deliveryStatusId}
+	if err := c.Bind(&updateDeliveryStatusFields); err != nil {
+		log.Println("not binded update fields")
+		return c.JSON(http.StatusBadRequest, "Invalid request body")
+	}
+	if updateDeliveryStatusFields.TimeOfDelivery <= 0 {
+		return c.JSON(http.StatusBadRequest, fmt.Errorf("missing parameters").Error())
+	} else {
+		existingDeliveryStatus.OrderId = updateDeliveryStatusFields.OrderId
+		existingDeliveryStatus.DeliveryPersonnelId = updateDeliveryStatusFields.DeliveryPersonnelId
+		existingDeliveryStatus.OrderStatus = updateDeliveryStatusFields.OrderStatus
+		existingDeliveryStatus.TimeOfDelivery = updateDeliveryStatusFields.TimeOfDelivery
+
+	}
+	if err := h.service.UpdateDeliveryStatusById(ctx, existingDeliveryStatus); err != nil {
+		log.Println(err)
+		return c.JSON(http.StatusInternalServerError, "Failed to update delivery status")
+	}
+
+	return c.JSON(http.StatusOK, existingDeliveryStatus)
 }

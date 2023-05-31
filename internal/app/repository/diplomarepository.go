@@ -70,4 +70,17 @@ type DiplomaRepository interface {
 
 	AddUser(ctx context.Context, username, email string, password string) (id int64, error error)
 	AddToken(ctx context.Context, id int64, token string) error
+
+	FindAllOrders(ctx context.Context) ([]*model.Order, error)
+	FindOrderById(ctx context.Context, id int) (*model.Order, error)
+	AddOrder(ctx context.Context, RestaurantId int, CustomerId int, DeliveryPersonnelId int, MenuId int, DeliveryAddress string,
+		DeliveryStatusId int, TotalPrice int) (string, error)
+	DeleteOrderById(ctx context.Context, id int) error
+	UpdateOrderById(ctx context.Context, order *model.Order) (*model.Order, error)
+
+	FindAllDeliveryStatus(ctx context.Context) ([]*model.DeliveryStatus, error)
+	FindDeliveryStatusById(ctx context.Context, id int) (*model.DeliveryStatus, error)
+	AddDeliveryStatus(ctx context.Context, OrderId int, DeliveryPersonnelId int, OrderStatus model.OrderStatus, TimeOfDelivery int) (string, error)
+	DeleteDeliveryStatusById(ctx context.Context, id int) error
+	UpdateDeliveryStatusById(ctx context.Context, deliveryStatus *model.DeliveryStatus) (*model.DeliveryStatus, error)
 }

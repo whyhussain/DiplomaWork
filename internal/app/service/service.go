@@ -68,5 +68,18 @@ type DiplomaService interface {
 	UpdateDeliveryPersonnelById(ctx context.Context, deliveryPersonnel *model.DeliveryPersonnel) error
 	DeleteDeliveryPersonnelById(ctx context.Context, id int) error
 
+	GetOrders(ctx context.Context) ([]*model.Order, error)
+	GetOrderById(ctx context.Context, id int) (*model.Order, error)
+	AddOrder(ctx context.Context, RestaurantId int, CustomerId int, DeliveryPersonnelId int, MenuId int, DeliveryAddress string,
+		DeliveryStatusId int, TotalPrice int) (string, error)
+	UpdateOrderById(ctx context.Context, order *model.Order) error
+	DeleteOrderById(ctx context.Context, id int) error
+
+	GetDeliveryStatusList(ctx context.Context) ([]*model.DeliveryStatus, error)
+	GetDeliveryStatusById(ctx context.Context, id int) (*model.DeliveryStatus, error)
+	AddDeliveryStatus(ctx context.Context, OrderId int, DeliveryPersonnelId int, OrderStatus model.OrderStatus, TimeOfDelivery int) (string, error)
+	UpdateDeliveryStatusById(ctx context.Context, deliveryStatus *model.DeliveryStatus) error
+	DeleteDeliveryStatusById(ctx context.Context, id int) error
+
 	AddUser(ctx context.Context, username, email string, password [32]byte) (token *model.Token, error error)
 }

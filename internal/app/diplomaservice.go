@@ -93,6 +93,18 @@ func StartNumbleServie(ctx context.Context, errCh chan<- error) {
 	e.PUT("/reviews/:id", handlers.UpdateReviewById)
 	e.DELETE("/reviews/:id", handlers.DeleteReviewById)
 
+	e.GET("/orders", handlers.GetOrders)
+	e.GET("/orders/:id", handlers.GetOrderById)
+	e.POST("/orders", handlers.AddOrder)
+	e.PUT("/orders/:id", handlers.UpdateOrderById)
+	e.DELETE("/orders/:id", handlers.DeleteOrderById)
+
+	e.GET("/delivery-status", handlers.GetDeliveryStatusList)
+	e.GET("/delivery-status/:id", handlers.GetDeliveryStatusById)
+	e.POST("/delivery-status", handlers.AddDeliveryStatus)
+	e.PUT("/delivery-status/:id", handlers.UpdateDeliveryStatusById)
+	e.DELETE("/delivery-status/:id", handlers.DeleteDeliveryStatusById)
+
 	e.GET("/schedules", handlers.GetSchedules)
 	e.GET("/schedules/:id", handlers.GetScheduleById)
 	e.POST("/schedules", handlers.AddSchedule)
